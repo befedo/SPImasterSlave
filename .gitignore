@@ -3,4 +3,8 @@ Makefile
 .project
 BuildPath.txt
 [BP External Sources]
+work/
 *.o
+*.mti
+*.mpf
+*.wlf
