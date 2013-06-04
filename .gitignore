@@ -2,6 +2,7 @@ CMakeFiles
 Makefile
 .project
 BuildPath.txt
+transcript
 [BP External Sources]
 work/
 *.o
