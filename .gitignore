@@ -5,6 +5,7 @@ BuildPath.txt
 transcript
 [BP External Sources]
 work/
+*.cf
 *.o
 *.mti
 *.mpf
