@@ -35,8 +35,8 @@ begin
 
   clock : process is
   begin
-  	sigSclk <= '0'; wait for periodeHalbe;
   	sigSclk <= '1'; wait for periodeHalbe;
+  	sigSclk <= '0'; wait for periodeHalbe;
   end process clock;
   
   generateSlaveSelect : process is
@@ -52,12 +52,14 @@ begin
   	             , '0' after 6*periodeHalbe, '1' after 8*periodeHalbe, '0' after 10*periodeHalbe
   	             , '1' after 12*periodeHalbe, '0' after 14*periodeHalbe, '1' after 16*periodeHalbe
   	             , '0' after 18*periodeHalbe;
+  	wait for 18*periodeHalbe;
+  	assert false report "Simulation beendet!" severity failure;  	
   	wait;
   end process generateSdi;
 
   dut:
   entity work.slave(abstract)
-  generic map(8, idleLow, firstEdge)
+  generic map(8, idleHigh, firstEdge)
   port map(sigSclk, sigSs, sigSdi, sigSdo, sigValid, sigSdoReg, sigSdiReg);
 
 end architecture testbench;
