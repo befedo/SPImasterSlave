@@ -17,21 +17,21 @@ component slave is
            cpol               : clockPolarity := idleLow;
            cpha               : clockPhase := firstEdge
     );      
-    port (sclk, ss, sdi       : in  bit;
+    port (sclk, ss, sdi       : in  std_logic;
                 sdo, valid    : out std_logic;
-                sdoReg        : in  bit_vector(portWidth-1 downto 0);
+                sdoReg        : in  std_logic_vector(portWidth-1 downto 0);
                 sdiReg        : out std_logic_vector(portWidth-1 downto 0) 
     );
 end component slave;
 
-signal sigSclk, sigSs, sigSdi : bit;
+signal sigSclk, sigSs, sigSdi : std_logic;
 signal sigSdo, sigValid       : std_logic;
-signal sigSdoReg              : bit_vector(7 downto 0);
+signal sigSdoReg              : std_logic_vector(7 downto 0);
 signal sigSdiReg              : std_logic_vector(7 downto 0);
 
 begin
 
-  sigSdoReg <= "10101010";
+  sigSdoReg <= "01010011";
 
   clock : process is
   begin
