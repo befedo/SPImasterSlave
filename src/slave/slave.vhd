@@ -17,7 +17,7 @@ entity slave is
 	);
 end entity slave;
 
-architecture abstract of slave is    
+architecture mooreFSM of slave is    
   signal currentState, nextState : states := idle;
   signal index : natural range 0 to portWidth := 0;
   -- interne Signale für's RTL-Design
@@ -64,4 +64,4 @@ begin
     end case;
   end process output;
 
-end architecture abstract;
+end architecture mooreFSM;

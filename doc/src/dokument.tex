@@ -1,0 +1,67 @@
+\input{header}
+
+\begin {document}
+	%% Titelseite
+	\pdfbookmark[1]{Titelseite}{titlepage}
+	\input{titlepage}
+
+	%% Inhaltsverzeichnis
+	\newpage
+	\thispagestyle{empty}
+	\null
+
+	\pagenumbering{Roman}
+	\clearpage\setcounter{page}{1}
+
+	\pdfbookmark[1]{Inhaltsverzeichnis}{tableofcontents}
+	\tableofcontents
+	\pagebreak
+	
+	\newpage
+	\thispagestyle{empty}
+	\null	
+
+    \renewcommand{\abstractname}{Abstract}    
+    \begin{abstract}
+    	Das Serial Peripheral Interface (kurz SPI) ist ein von Motorola entwickeltes Bus-System mit einem sehr lockeren Standard
+    	für einen synchronen seriellen Datenbus (Synchronous Serial Port), mit dem digitale Schaltungen nach dem Master-Slave-Prinzip
+    	miteinander verbunden werden können. Ein ähnliches Bus-System existiert von National Semiconductor und nennt sich Microwire.
+    	\newline
+    	Es können theoretisch beliebig viele Teilnehmer an den Bus angeschlossen werden, wobei es immer genau einen Master geben muss.
+    	Er ist derjenige, der das Clock-Signal an SCK erzeugt und festlegt, mit welchem Slave er kommunizieren will. Das geschieht über
+    	die Leitung ''Slave Select''. Wird sie gegen Masse gezogen, wird der jeweilige Slave
+    	aktiv, ''lauscht'' an MOSI und legt seine Daten im Takt von SCK an MISO. Es wird somit
+    	ein Byte vom Master zum Slave und ein anderes Byte vom Slave zum Master transportiert.
+    \end{abstract}
+
+    %% Eigentlicher Inhalt
+    \pagenumbering{arabic}
+    \clearpage\setcounter{page}{1}
+
+	\include{kapitel}
+	%% ...
+
+	%% Beginn vom Anhang
+	% \appendix
+	%\pagenumbering{romanian}
+	%\clearpage\setcounter{page}{2}
+
+	%% Glossar
+	% \include{glossar}		
+
+	%% Verzeichnisse
+	\newpage
+	\listoffigures
+ 	% \listoftables
+	\lstlistoflistings
+
+	%% Literaturverzeichnis
+	% \newpage
+	% \bibliographystyle{gerapali}
+	% \bibliography{quellen}
+	% \nocite{*}
+
+	%% sonstiger Anhang:
+	% \include{anhang}
+
+\end{document}

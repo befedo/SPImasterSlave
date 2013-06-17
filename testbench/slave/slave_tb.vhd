@@ -81,11 +81,6 @@ begin
   begin
     temp := sigSdiReg;
     if sigValid = '1' and sigValid'event then
-        -- little endianess zu big endianess Konvertierung
---        for index in 0 to temp'length/2-1 loop
---            temp(index) := sigSdiReg(dataLength'high-1-index);
---            temp(dataLength'high-1-index) := sigSdiReg(index);
---        end loop;
         if ucVector(used)(byteCount*8+dataLength'high-1 downto byteCount*8) = temp(dataLength'high-1 downto 0) then
             report "Pattern #" & integer'image(byteCount+1) & " matched." severity note;
         else
@@ -96,7 +91,7 @@ begin
   end process checkValid;  
 
   dut:
-  entity work.slave(abstract)
+  entity work.slave(mooreFSM)
   generic map(8, idleHigh, firstEdge)
   port map(sigSclk, sigSs, sigSdi, sigSdo, sigValid, sigSdoReg, sigSdiReg);
 

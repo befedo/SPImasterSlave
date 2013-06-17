@@ -1,0 +1,15 @@
+reset
+#set terminal png
+set output "linear.ps"
+set terminal postscript enhanced colour
+#to put an empty boundary around the
+#data inside an autoscaled graph.
+set offset graph 0.05,0.05,0.05,0.0
+set tics out nomirror
+
+# Oberes Diagramm mit den Ausganswerten des Oszillators
+    set xlabel "gemessener Schallweg [m]"
+    set ylabel "realer Wert [m]"
+    set label 'f(x)=0.996x-0.11' at 1.5, 1
+    set autoscale
+    plot "data/linear" using 4:5 with points title 'Messwerte', "data/linear" using 4:6 with lines title 'Trendlinie'

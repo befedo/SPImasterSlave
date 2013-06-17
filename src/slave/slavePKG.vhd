@@ -5,7 +5,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 
-package slavePackage is
+package slavePackage is    
 	-- es existieren Vier mögliche Modi
 	type clockPolarity is (idleLow, idleHigh);
 	type clockPhase is (firstEdge, secondEdge);
@@ -16,7 +16,8 @@ package slavePackage is
 	--	1	  |	0	    |	1
 	--	2	  |	1	    |	0
 	--	3	  |	1	    |	1
-	subtype dataLength	is natural range 1 to 8;
+	subtype dataLength	is natural range 1 to 8;                    -- Wortlänge
+	type IOport is array(dataLength'high-1 downto 0) of boolean;    -- Port zur algor.-Ebene
 	-- Allgemeine Verzögerungszeit
 	constant delay : time := 20 ns;
 	-- Zustandcodierung	
