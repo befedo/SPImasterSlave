@@ -5,6 +5,14 @@ BuildPath.txt
 transcript
 [BP External Sources]
 work/
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lol
+*.nlo
+*.toc
 *.bak
 *.cf
 *.o
