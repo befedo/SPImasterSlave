@@ -7,8 +7,8 @@ use WORK.testbenchPackage.all;
 
 
 entity slave_tb is
-  generic(periodeHalbe   : time     := 500 ns; 
-          used           : usecase  := eightBytes; 
+  generic(periodeHalbe   : time     := 500 ns;
+          used           : usecase  := eightBytes;
           bitsTransfered : positive := ucSize(eightBytes)
           );
 end entity slave_tb;
