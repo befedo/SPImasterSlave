@@ -37,7 +37,8 @@ entity SPISck is
 		spiClkEnable: in std_logic;
 		clk: in std_logic;
 		cpol: in std_logic;
-		sck: out std_logic
+		sck: out std_logic;
+		sigData:  in std_logic_vector(15 downto 0)
 	);
 end SPISck;
 
@@ -72,8 +73,6 @@ architecture Behavioral of SPISck is
 	signal sigReset: std_logic;
 	signal sigResetFinal: std_logic;
 	signal sigSck: std_logic:='0';
-	--TODO remove me
-	signal sigData: std_logic_vector(15 downto 0):=std_logic_vector(to_unsigned(50,16));
 	
 begin
    countInst: Counter port map (
