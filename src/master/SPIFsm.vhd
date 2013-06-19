@@ -62,6 +62,7 @@ entity SPIFsm is
 		rxo: in std_logic;
 		enable: in std_logic;
 		ready: out std_logic;
+		txEmpty: out std_logic;
 		txSet: in std_logic;
 		ssByte: in std_logic;
 		
@@ -159,18 +160,20 @@ begin
 				spiClkEnable<='0';
 				rxWrite<='0';
 				txWrite<='0';
-				ready<='0';
+				ready<='1';
 				bitWrite<='0';
 				bitRead<='0';
 				shiftReset<='1';
 				countReset<='1';
 				reset<='0';
 				ss<='1';
+				txEmpty<='0';
 			when s2=>
 				shiftReset<='0';
-				ready<='0';
+				ready<='1';
 				txWrite<='1';
 				countReset<='0';
+				txEmpty<='1';
 			when s3 =>
 				spiClkEnable<='1';
 				spiClkVisible<='1';
@@ -180,6 +183,7 @@ begin
 				shiftReset<='0';
 				countReset<='0';
 				ss<='0';
+				txEmpty<='0';
 			when s4 =>
 				countUp<='1';
 				bitWrite<='1';

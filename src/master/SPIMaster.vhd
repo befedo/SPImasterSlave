@@ -39,11 +39,14 @@ entity SPIMaster is
 		
 		--intern
 		clk: in std_logic;
-		ready: out std_logic;
-		enable: in std_logic;
 		tx: in std_logic_vector(7 downto 0);
 		rx: out std_logic_vector(7 downto 0);
-		txWr: in std_logic
+		txWr: in std_logic;
+		sr: out std_logic_vector(7 downto 0);
+		ccr :in std_logic_vector(15 downto 0);
+		ccrWr: in std_logic;
+		cr: in std_logic_vector(7 downto 0);
+		crWr: in std_logic
 	);
 end SPIMaster;
 
@@ -67,6 +70,7 @@ architecture Behavioral of SPIMaster is
 			rxo: in std_logic;
 			enable: in std_logic;
 			ready: out std_logic;
+			txEmpty: out std_logic;
 			txSet: in std_logic;
 			ssByte: in std_logic;
 			reset: out std_logic;
@@ -113,7 +117,8 @@ architecture Behavioral of SPIMaster is
 			spiClkEnable: in std_logic;
 			clk: in std_logic;
 			cpol: in std_logic;
-			sck: out std_logic
+			sck: out std_logic;
+			sigData:  in std_logic_vector(15 downto 0)
 		);
 	end component;
 	
@@ -143,13 +148,17 @@ architecture Behavioral of SPIMaster is
 	signal bitRead: std_logic;
 	
 	--TODO dont fix
-	signal cpha: std_logic:='1';
-	signal rxo: std_logic:='0';
---	signal enable: std_logic:='1';
---	signal ready: std_logic;
+	signal cpha: std_logic;
+	signal rxo: std_logic;
+	signal enable: std_logic;
+	signal txEmpty: std_logic;
+	signal ready: std_logic;
 	signal txSet: std_logic;
-	signal ssByte: std_logic:='1';
-	signal cpol: std_logic:='1';
+	signal ssByte: std_logic;
+	signal cpol: std_logic;
+	
+	signal ccrValue: std_logic_vector(15 downto 0);
+	signal crValue: std_logic_vector(7 downto 0);
 		
 	signal reset: std_logic;
 	signal shiftReset: std_logic;
@@ -176,6 +185,7 @@ begin
 		cpha=>cpha,
 		rxo=>rxo,
 		enable=>enable,
+		txEmpty=>txEmpty,
 		ready=>ready,
 		txSet=>txSet,
 		ssByte=>ssByte,
@@ -190,7 +200,8 @@ begin
 		spiClkEnable=>spiClkEnable,
 		clk=>clk,
 		cpol=>cpol,
-		sck=>sck
+		sck=>sck,
+		sigData=>ccrValue
 	);
 	
 	byteCounterInst: ByteCounter port map (
@@ -218,6 +229,25 @@ begin
 		currentValue => rx
 	);
 	
+	crRegInst: Reg port map(
+		wr => crWr,
+		clk => clk,
+		reset => reset,
+		dataIn => cr,
+		currentValue => crValue
+	);	
+	
+	ccrRegInst: Reg generic map(
+		size=>16
+	)
+	port map(
+		wr => ccrWr,
+		clk => clk,
+		reset => reset,
+		dataIn => ccr,
+		currentValue => ccrValue
+	);
+	
 	shiftInst: Shift port map(
 		reset => shiftReset,
 		load => txWrite,
@@ -229,6 +259,15 @@ begin
 		outEnable => bitWrite,
 		inEnable => bitRead
 	);
+	
+	--Control Register Zuweisung
+	ssByte<=crValue(4);
+	rxo<=crValue(3);
+	cpha<=crValue(2);
+	cpol<=crValue(1);
+	enable<=crValue(0);
+	sr<=(0=>ready,1=>txEmpty,others=>'0');
 
 end Behavioral;
+
 
