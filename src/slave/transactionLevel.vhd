@@ -1,0 +1,34 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+library WORK;
+use WORK.slavePackage.all;
+
+entity transactionLVL is
+    generic (portWidth : dataLength := 8
+    );
+    port (  sdi, ss : in  bit;
+            sdo     : out bit;
+            valid   : inout bit;
+            sdoPort : in  bit_vector(portWidth-1 downto 0);
+            sdiPort : out bit_vector(portWidth-1 downto 0)
+    );
+end entity transactionLVL;
+
+architecture timedFunction of transactionLVL is
+
+begin
+    process is
+    begin
+        wait until ss'event and ss = '0';   -- Event zum start des Algotithmus ist die fallende flanke von SlaveSelect
+        while ss = '0' loop                 -- und er wird solange ausgeführt, wie SlaveSelect Null bleibt (siehe Spec).
+            for index in sdiPort'range loop -- Solange Daten in eine Portbreite passen
+                sdiPort(index) <= sdi;      -- werden diese eingelesen und
+                sdo <= sdoPort(index);      -- analog welche ausgegeben (Vollduplex Betrieb).
+                wait for delay;             -- Modellierung der Latenzzeit nach timed-function-model
+            end loop;
+            valid <= not valid;             -- nach Abschluß des Einlese-/Schreibvorgangs
+            wait for delay;                 -- wird das Valid Signal getoggelt
+            valid <= not valid;
+        end loop;
+    end process;
+end architecture timedFunction;
