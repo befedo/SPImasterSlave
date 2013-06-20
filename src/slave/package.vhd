@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------
 -- Package Deklarationen zum SPI Slave
 --------------------------------------------------------------------------------
-library IEEE;
-use IEEE.std_logic_1164.all;
+library ieee;
+use ieee.std_logic_1164.all;
 
 
 package slavePackage is    
@@ -11,12 +11,12 @@ package slavePackage is
 	type clockPhase is (firstEdge, secondEdge);
 	type mode is array(idleLow to idleHigh) of clockPhase;
 	-- ergibt:
-	-- MODE | CPOL 	| CPHA
+	-- MODE   | CPOL 	| CPHA
 	--	0	  |	0	    |	0
 	--	1	  |	0	    |	1
 	--	2	  |	1	    |	0
 	--	3	  |	1	    |	1
-	subtype dataLength	is natural range 1 to 8;                    -- Wortlänge
+	subtype dataLength	is natural range 1 to 8; -- Wortlänge
 	-- Allgemeine Verzögerungszeit
 	constant delay : time := 20 ns;
 	-- Zustandcodierung	
@@ -27,9 +27,9 @@ end package slavePackage;
 --------------------------------------------------------------------------------
 -- Package Deklarationen zur Testbench
 --------------------------------------------------------------------------------
-library IEEE;
-use IEEE.std_logic_1164.all;
-use WORK.slavePackage.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use work.slavePackage.all;
 
 
 package testbenchPackage is    
@@ -57,7 +57,7 @@ package testbenchPackage is
     constant pattern16 : patternVector := X"92";
     constant pattern17 : patternVector := X"2d";
     constant ucSize    : sizeArray     := ( patternVector'length, 17*patternVector'length, patternVector'length/2 );
-    constant ucVector  : usecaseArray  := ( (7 => '1', 6 => '0', 5 => '1', 4 => '0', 3 => '1', 2 => '0', 1 => '1', 0 => '0', others=>'0'),
+    constant ucVector  : usecaseArray  := ( (7 | 5 | 3 | 1 => '1', 6 | 4 | 2 | 0 => '0', others=>'0'),
                                             (pattern1 & pattern2  & pattern3  & pattern4  & pattern5  & pattern6  & pattern7  & pattern8  & pattern9 & pattern10 & pattern11 & pattern12 & pattern13 & pattern14 & pattern15 & pattern16 & pattern17),
                                             (3 downto 0 => '1', others=>'0') );
 end package testbenchPackage;

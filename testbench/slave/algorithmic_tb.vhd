@@ -1,8 +1,8 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-library WORK;
-use WORK.slavePackage.all;
-use WORK.testbenchPackage.all;
+library ieee;
+use ieee.std_logic_1164.all;
+library work;
+use work.slavePackage.all;
+use work.testbenchPackage.all;
 
 
 entity algorithmic_tb is
@@ -26,13 +26,14 @@ architecture testbench of algorithmic_tb is
     signal sigSdiPort, sigSdoPort : bit_vector(dataLength'high-1 downto 0);
 
 begin
-    foobar : process is
+    algorithmic : process is
         constant testcase : bit_vector(ucVector(used)'range) := to_bitvector(ucVector(used));
     begin
         sigSdoPort <= X"AB";
         -- erzeugen der SlaveSelect Belegung für die Länge eines use-cases (siehe Package)
         sigSs      <= '1', '0' after delay, '1' after (ucSize(used)+1)*delay;
         wait for delay;
+        -- Iterationen über den gesamten Use-Case Vector und Zuweisen an SDI
         for index in 0 to ucSize(used)-1 loop
             sigSdi <= testcase(index);
             wait for delay;
@@ -40,8 +41,22 @@ begin
         wait for delay;
         report "Simulation beendet!" severity failure;
         wait;
-    end process foobar;
+    end process algorithmic;
 
+     checkValid : process (sigValid) is
+        variable byteCount : natural range 0 to 2*dataLength'high+1 := 0; -- Zählvariable
+      begin
+        if sigValid = '1' and sigValid'event then
+            -- überprüfen des Slices aus dem Use-Case-Vektor mit den eingelesenen Signalen
+            if to_bitvector(ucVector(used)(byteCount*8+dataLength'high-1 downto byteCount*8)) = sigSdiPort(dataLength'high-1 downto 0) then
+                report "Pattern #" & integer'image(byteCount+1) & " matched." severity note;
+            else
+                --report "Pattern #" & integer'image(byteCount+1) & " missmatch!" severity failure;            
+            end if;
+            byteCount := byteCount + 1;
+        end if;
+      end process checkValid;
+    -- Componenteninstanziierung
     dut :
     entity work.transactionLVL(timedFunction)
     generic map (dataLength'high)

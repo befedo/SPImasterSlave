@@ -1,9 +1,9 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all; 
-library WORK;
-use WORK.slavePackage.all;
-use WORK.testbenchPackage.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all; 
+library work;
+use work.slavePackage.all;
+use work.testbenchPackage.all;
 
 
 entity rtl_tb is
