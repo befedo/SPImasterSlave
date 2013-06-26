@@ -1,10 +1,22 @@
 --------------------------------------------------------------------------------
--- Package Deklarationen zum SPI Slave
+-- Package: slavePackage, testbenchPackage
+--------------------------------------------------------------------------------
+-- Copyright         : 2013
+-- Filename          : package.vhd
+-- Creation date     : 19.06.2013
+-- Author(s)         : Marc Ludwig <marc.ludwig@stud.fh-jena.de>
+-- Version           : 1.00
+-- Description       : Packages zum SPI-Projekt
+--------------------------------------------------------------------------------
+-- File History:
+-- Date                            | Version | Author    | Comment
+-- Wed Jun 19 14:56:09 2013 +0200  | 0.10    | Ludwig    | Initial Commit
+--                                 | 0.20    | Ludwig    | Testbenches weiter implementiert
+--                                 | 1.00    | Ludwig    | Abgabeversion
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
-
-
+--------------------------------------------------------------------------------
 package slavePackage is    
 	-- es existieren Vier mögliche Modi
 	type clockPolarity is (idleLow, idleHigh);
@@ -22,16 +34,13 @@ package slavePackage is
 	-- Zustandcodierung	
     type states is (idle, init, read, write, lastEdge);
 end package slavePackage;
-
-
 --------------------------------------------------------------------------------
 -- Package Deklarationen zur Testbench
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use work.slavePackage.all;
-
-
+--------------------------------------------------------------------------------
 package testbenchPackage is    
     subtype patternVector is std_logic_vector(dataLength'high-1 downto 0);    
     subtype testVector    is std_logic_vector(17*dataLength'high-1 downto 0);

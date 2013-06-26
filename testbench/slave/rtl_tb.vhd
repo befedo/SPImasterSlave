@@ -1,45 +1,66 @@
+--------------------------------------------------------------------------------
+-- Entity: rtl_tb
+--------------------------------------------------------------------------------
+-- Copyright         : 2013
+-- Filename          : rtl_tb.vhd
+-- Creation date     : 19.06.2013
+-- Author(s)         : Marc Ludwig <marc.ludwig@stud.fh-jena.de>
+-- Version           : 1.00
+-- Description       : Testbench zum SPI-Slave auf Register Transfer Ebene
+--------------------------------------------------------------------------------
+-- File History:
+-- Date                            | Version | Author    | Comment
+-- Wed Jun 19 14:56:09 2013 +0200  | 1.00    | Ludwig    | Initial Commit
+--------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all; 
 library work;
 use work.slavePackage.all;
 use work.testbenchPackage.all;
-
-
+--------------------------------------------------------------------------------
 entity rtl_tb is
-  generic(periodeHalbe   : time     := 500 ns;
-          used           : usecase  := eightBytes;
-          bitsTransfered : positive := ucSize(eightBytes)
-          );
+  generic (
+    periodeHalbe   : time     := 500 ns;
+    used           : usecase  := eightBytes;
+    bitsTransfered : positive := ucSize(eightBytes)
+  );
 end entity rtl_tb;
-
-
+--------------------------------------------------------------------------------
 architecture testbench of rtl_tb is 
 
 component registerTransferLVL is
-  generic (portWidth          : dataLength := 8;
-           cpol               : clockPolarity := idleLow;
-           cpha               : clockPhase := firstEdge
-    );      
-    port (sclk, ss, sdi       : in  std_logic;
-          sdo, valid          : out std_logic;
-          sdoReg              : in  std_logic_vector(portWidth-1 downto 0);
-          sdiReg              : out std_logic_vector(portWidth-1 downto 0) 
-    );
+  generic (
+    portWidth          : dataLength := 8;
+    cpol               : clockPolarity := idleLow;
+    cpha               : clockPhase := firstEdge
+  );      
+  port (
+    clk, sclk, ss, sdi : in  std_logic;
+    sdo, valid         : out std_logic;
+    sdoReg             : in  std_logic_vector(portWidth-1 downto 0);
+    sdiReg             : out std_logic_vector(portWidth-1 downto 0) 
+  );
 end component registerTransferLVL;
 
-signal sigSclk, sigSs, sigSdi : std_logic;
+signal sigClk, sigSclk, sigSs, sigSdi : std_logic;
 signal sigSdo, sigValid       : std_logic;
 signal sigSdoReg              : std_logic_vector(dataLength'high-1 downto 0);
 signal sigSdiReg              : std_logic_vector(dataLength'high-1 downto 0);
 
 begin
 
-  clock : process is
+  mainClock : process is
   begin
-  	sigSclk <= '0'; wait for periodeHalbe;
-  	sigSclk <= '1'; wait for periodeHalbe;
-  end process clock;
+    sigClk <= '0'; wait for periodeHalbe/100;
+    sigClk <= '1'; wait for periodeHalbe/100;
+  end process mainClock;
+
+  dataClock : process is
+  begin
+    sigSclk <= '0'; wait for periodeHalbe;
+    sigSclk <= '1'; wait for periodeHalbe;
+  end process dataClock;
   
   generateSlaveSelect : process is
   begin
@@ -93,6 +114,6 @@ begin
   dut:
   entity work.registerTransferLVL(mooreFSM)
   generic map(8, idleHigh, firstEdge)
-  port map(sigSclk, sigSs, sigSdi, sigSdo, sigValid, sigSdoReg, sigSdiReg);
+  port map(sigClk, sigSclk, sigSs, sigSdi, sigSdo, sigValid, sigSdoReg, sigSdiReg);
 
 end architecture testbench;

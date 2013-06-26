@@ -3,8 +3,14 @@ use ieee.std_logic_1164.all;
 library work;
 use work.slavePackage.all;
 use work.testbenchPackage.all;
-
-
+--
+-- commit  : b5a41713157f1231450373acfc3aabb57556601c
+-- Author  : Marc Ludwig <s0maludw@stud.fh-jena.de>
+-- Date    : Wed Jun 19 14:56:09 2013 +0200
+-- Version : 0.1 - Initial
+--           0.2 - Testbenches weiter implementiert
+--           1.0 - Abgabeversion
+--
 entity algorithmic_tb is
     generic (used : usecase := eightBytes);
 end entity algorithmic_tb;
@@ -12,13 +18,13 @@ end entity algorithmic_tb;
 
 architecture testbench of algorithmic_tb is
     component transactionLVL is
-        generic (portWidth : dataLength := 8
+        generic ( portWidth : dataLength := 8
         );
-        port ( sdi, ss  : in  bit;
-            sdo         : out bit;
-            valid       : inout bit;
-            sdoPort     : in  bit_vector(portWidth-1 downto 0);
-            sdiPort     : out bit_vector(portWidth-1 downto 0)
+        port (    sdi, ss   : in  bit;
+                  sdo       : out bit;
+                  valid     : inout bit;
+                  sdoPort   : in  bit_vector(portWidth-1 downto 0);
+                  sdiPort   : out bit_vector(portWidth-1 downto 0)
         );
     end component transactionLVL;
 

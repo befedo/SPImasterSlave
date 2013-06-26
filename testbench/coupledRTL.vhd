@@ -16,14 +16,16 @@ architecture  testbench of coupledRTL is
     -- Der Slave als Register Transfer Modell
     -----------------------------------------------------------------------------------------------
     component registerTransferLVL is
-        generic (portWidth  : dataLength := 8;
+        generic (
+            portWidth  : dataLength := 8;
             cpol            : clockPolarity := idleLow;
             cpha            : clockPhase := firstEdge
         );
-        port (sclk, ss, sdi : in  std_logic;
-            sdo, valid      : out std_logic;
-            sdoReg          : in  std_logic_vector(portWidth-1 downto 0);
-            sdiReg          : out std_logic_vector(portWidth-1 downto 0)
+        port (
+            clk, sclk, ss, sdi : in  std_logic;
+            sdo, valid         : out std_logic;
+            sdoReg             : in  std_logic_vector(portWidth-1 downto 0);
+            sdiReg             : out std_logic_vector(portWidth-1 downto 0)
         );
     end component registerTransferLVL;
     -----------------------------------------------------------------------------------------------
@@ -48,11 +50,17 @@ architecture  testbench of coupledRTL is
     -----------------------------------------------------------------------------------------------
     -- interne Signale der Testbench
     -----------------------------------------------------------------------------------------------
-    signal sigMiso, sigMosi, sigSck, sigSs, sigClk, sigTxWr, sigCcrWr, sigCrWr, sigValid : std_logic;
+    signal sigMiso, sigMosi, sigSck, sigSs, sigClk, sigClk100, sigTxWr, sigCcrWr, sigCrWr, sigValid : std_logic;
     signal sigTx, sigRx, sigSr, sigCr, sigSdiReg : std_logic_vector(dataLength'high-1 downto 0);
     signal sigCcr : std_logic_vector(2*dataLength'high-1 downto 0);
     
 begin
+    clock100 : process is
+    begin
+        sigClk100 <= '0'; wait for periodeHalbe/100;
+        sigClk100 <= '1'; wait for periodeHalbe/100;
+    end process clock100;
+    
     clock : process is
     begin
         sigClk <= '0'; wait for periodeHalbe;
@@ -80,7 +88,7 @@ begin
     slave:
     entity work.registerTransferLVL(mooreFSM)
     generic map(8, idleHigh, firstEdge)
-    port map(sigSck, sigSs, sigMosi, sigMiso, sigValid, sigTx, sigSdiReg);
+    port map(sigClk100, sigSck, sigSs, sigMosi, sigMiso, sigValid, sigTx, sigSdiReg);
 
     master:
     entity work.SPImaster(behavioral)
