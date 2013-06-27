@@ -52,7 +52,7 @@ end component registerTransferLVL;
 ---------------------------- Siebensegmentanzeige ------------------------------
 component sevenseg is
     port (
-        clk, reset : in  std_logic;
+        clk 			 : in  std_logic;
         datain     : in  std_logic_vector(3 downto 0);
         dataout    : out std_logic_vector(6 downto 0)
     );
@@ -81,7 +81,6 @@ begin
     HEX5       <= sigBCD(5);
     HEX6       <= sigBCD(6);
     HEX7       <= sigBCD(7);
-    
     genSlaves : for index in 0 to count-1 generate
         slave : entity work.registerTransferLVL
             generic map(
@@ -95,7 +94,7 @@ begin
     genSevenseg : for index in 0 to dataLength'high-1 generate
         sevenseg : entity work.sevenseg
             port map(
-                sigValid(index/2), '0', sigData(index/2)((index mod 2)*4+3 downto (index mod 2)*4), sigBCD(index)(6 downto 0)
+                sigValid(index/2), sigData(index/2)((index mod 2)*4+3 downto (index mod 2)*4), sigBCD(index)(6 downto 0)
             );
     end generate genSevenseg;
     

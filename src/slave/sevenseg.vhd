@@ -27,7 +27,7 @@ use ieee.std_logic_unsigned.all;
 --------------------------------------------------------------------------------
 entity sevenseg is
 	port (
-		clk, reset : in  std_logic;
+		clk 			 : in  std_logic;
 		datain     : in  std_logic_vector(3 downto 0);
 		dataout    : out std_logic_vector(6 downto 0)
 	);
@@ -35,18 +35,16 @@ end sevenseg;
 --------------------------------------------------------------------------------
 architecture verhalten of sevenseg is
 
-signal temp : natural range 0 to 15;
+signal temp : natural range 0 to 15 := 0;
 
 begin
 
 
-count:process(reset,clk)
+count:process(clk)
 begin
-    if reset = '1' then
-        temp <= 0;
-    elsif (clk = '1' and clk'event) then
-        temp <= conv_integer(unsigned(datain));
-    end if;
+	if (clk = '1' and clk'event) then
+  	temp <= conv_integer(unsigned(datain));
+  end if;
 end process count;
 
 
@@ -82,4 +80,3 @@ end process convert;
 
 
 end verhalten;
-

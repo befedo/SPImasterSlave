@@ -118,7 +118,7 @@ begin
 --  end process checkValid;  
 
   dut:
-  entity work.fourSlaves(bcdDataOut)
+  entity work.multipleSlaves(bcdDataOut)
   generic map(4)
   port map(sigClk, sigSclk, sigSdi, sigSdo, sigSs, sigSdoPort, open, open, open, open, open, open, open, open);
 

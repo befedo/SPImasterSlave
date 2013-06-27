@@ -70,7 +70,7 @@ begin
         end if;
     end process stateClock;
 
-    combinational : process(currentState, index) is
+    combinational : process(currentState) is
     begin
         case currentState is
             when init | write | lastEdge => nextState <= read;
@@ -79,21 +79,18 @@ begin
         end case;
     end process combinational;
 
-    output : process(currentState, index, sdi, sdoReg, intSdiReg, intSdoReg) is
+    output : process(currentState) is
     begin
-        valid <= '0';
-        sdiReg(portWidth-1 downto 0) <= (others => 'Z');
-		  case currentState is
-            when init     => sdo <= sdoReg(index); 
-									  intSdoReg <= sdoReg;
-            when read     => index <= index+1;
-									  sdo <= sdoReg(index);
-									  intSdiReg(index) <= sdi;									  
-            when write    => index <= index;
-									  sdo <= intSdoReg(index);
-            when lastEdge => valid <= '1'; index <= 0; sdo <= sdoReg(0); sdiReg <= intSdiReg; intSdoReg <= sdoReg;
-            when idle     => index <= 0; sdo <= 'Z'; valid <= '0';
-        end case;
+    valid <= '0';
+    sdiReg(portWidth-1 downto 0) <= (others=>'Z');
+    -- default Zuweisungen
+    case currentState is
+        when init => sdo <= sdoReg(index); intSdoReg <= sdoReg;
+        when read => intSdiReg(index) <= sdi; index <= index+1;
+        when write => sdo <= intSdoReg(index);
+        when lastEdge => valid <= '1'; index <= 0; sdo <= sdoReg(0); sdiReg <= intSdiReg; intSdoReg <= sdoReg;
+        when idle => index <= 0; sdo <= 'Z'; valid <= '0';
+    end case;
     end process output;
 
 end architecture mooreFSM;
