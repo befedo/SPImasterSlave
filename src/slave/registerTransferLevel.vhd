@@ -56,7 +56,7 @@ begin
 
     stateClock : process(clk) is
     begin
-        if clk'event and clk = '1' then
+        if clk'event and clk = '0' then
             if intSclkLast = '0' and intSclkActual = '1'  then      -- rising edge
                 currentState <= nextState;
             elsif intSclkLast = '1' and intSclkActual = '0'  then   -- falling edge
@@ -73,9 +73,24 @@ begin
     combinational : process(currentState) is
     begin
         case currentState is
-            when init | write | lastEdge => nextState <= read;
-            when read => if index < dataLength'high-1 then nextState <= write; else nextState <= lastEdge; end if;
-            when idle => nextState <= currentState;
+            when idle => nextState <= idle;
+            when init => nextState <= one;
+            when one=> nextState <= two;
+            when two=> nextState <= three;
+            when three=> nextState <= four;
+            when four=> nextState <= five;
+            when five=> nextState <= six;
+            when six=> nextState <= seven;
+            when seven=> nextState <= eight;
+            when eight=> nextState <= nine;
+            when nine=> nextState <= ten;
+            when ten=> nextState <= eleven;
+            when eleven=> nextState <= twelve;
+            when twelve => nextState <= thirteen;
+            when thirteen=> nextState <= fourteen;
+            when fourteen=> nextState <= fifthteen;
+            when fifthteen=> nextState <= sixteen;
+            when sixteen=> nextState <= one;
         end case;
     end process combinational;
 
@@ -86,9 +101,9 @@ begin
     -- default Zuweisungen
     case currentState is
         when init => sdo <= sdoReg(index); intSdoReg <= sdoReg;
-        when read => intSdiReg(index) <= sdi; index <= index+1;
-        when write => sdo <= intSdoReg(index);
-        when lastEdge => valid <= '1'; index <= 0; sdo <= sdoReg(0); sdiReg <= intSdiReg; intSdoReg <= sdoReg;
+        when one|three|five|seven|nine|eleven|thirteen|fifthteen => intSdiReg(index) <= sdi; index <= index+1;
+        when two|four|six|eight|ten|twelve|fourteen => sdo <= intSdoReg(index);
+        when sixteen => valid <= '1'; index <= 0; sdo <= sdoReg(0); sdiReg <= intSdiReg; intSdoReg <= sdoReg;
         when idle => index <= 0; sdo <= 'Z'; valid <= '0';
     end case;
     end process output;
