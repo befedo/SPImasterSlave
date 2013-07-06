@@ -2,11 +2,12 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all; 
 library WORK;
-use WORK.slavePKG.all;
+use WORK.slavePackage.all;
+use WORK.testbenchPackage.all;
 
 
 entity slave_tb is
-  generic(periodeHalbe : time := 500 ns);
+  generic(periodeHalbe : time := 500 ns; bitsTransfered : positive := 128);
 end entity slave_tb;
 
 
@@ -31,31 +32,40 @@ signal sigSdiReg              : std_logic_vector(7 downto 0);
 
 begin
 
-  sigSdoReg <= "01010011";
+  sigSdoReg <= X"AB";
 
   clock : process is
   begin
-  	sigSclk <= '1'; wait for periodeHalbe;
   	sigSclk <= '0'; wait for periodeHalbe;
+  	sigSclk <= '1'; wait for periodeHalbe;
   end process clock;
   
   generateSlaveSelect : process is
   begin
-  	sigSs <= '1'; wait for periodeHalbe/2;
-  	sigSs <= '0'; wait for 16*periodeHalbe;
+    sigSs <= '1'; wait for periodeHalbe/2;
+    sigSs <= '0'; wait for 2*bitsTransfered*periodeHalbe + periodeHalbe/2;        	
   	sigSS <= '1'; wait;
   end process generateSlaveSelect;
 
   generateSdi : process is
-  begin
-  	sigSdi <= '0', '1' after periodeHalbe/2, '0' after 2*periodeHalbe, '1' after 4*periodeHalbe
-  	             , '0' after 6*periodeHalbe, '1' after 8*periodeHalbe, '0' after 10*periodeHalbe
-  	             , '1' after 12*periodeHalbe, '0' after 14*periodeHalbe, '1' after 16*periodeHalbe
-  	             , '0' after 18*periodeHalbe;
-  	wait for 18*periodeHalbe;
-  	assert false report "Simulation beendet!" severity failure;  	
+    variable bytesTransfered : positive := bitsTransfered/dataLength'high;
+  begin 
+    for index in 0 to testCase'length-1 loop 
+            sigSdi <= testCase(index);
+            wait for 2*periodeHalbe;
+    end loop;
+    wait for 2*periodeHalbe;    
+  	assert false report "Simulation beendet!" severity failure;
   	wait;
   end process generateSdi;
+
+  checkValid : process (sigValid) is
+    variable byteCount : natural := 0;
+  begin
+    if sigValid = '1' and sigValid'event then
+      assert testVector(byteCount*8+7 downto byteCount) = sigSdoReg(7 downto 0) report "F00B4R" severity failure;
+    end if;
+  end process checkValid;  
 
   dut:
   entity work.slave(abstract)
