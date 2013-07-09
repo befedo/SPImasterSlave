@@ -27,12 +27,10 @@ end component slave;
 
 signal sigSclk, sigSs, sigSdi : std_logic;
 signal sigSdo, sigValid       : std_logic;
-signal sigSdoReg              : std_logic_vector(7 downto 0);
-signal sigSdiReg              : std_logic_vector(7 downto 0);
+signal sigSdoReg              : std_logic_vector(dataLength'high-1 downto 0);
+signal sigSdiReg              : std_logic_vector(dataLength'high-1 downto 0);
 
 begin
-
-  sigSdoReg <= X"AB";
 
   clock : process is
   begin
@@ -48,22 +46,49 @@ begin
   end process generateSlaveSelect;
 
   generateSdi : process is
-    variable bytesTransfered : positive := bitsTransfered/dataLength'high;
   begin 
-    for index in 0 to testCase'length-1 loop 
-            sigSdi <= testCase(index);
-            wait for 2*periodeHalbe;
+    for index in 0 to bitsTransfered-1 loop 
+        sigSdi <= testCase(index); wait for 2*periodeHalbe;
     end loop;
     wait for 2*periodeHalbe;    
-  	assert false report "Simulation beendet!" severity failure;
+  	report "Simulation beendet!" severity failure;
   	wait;
   end process generateSdi;
 
-  checkValid : process (sigValid) is
-    variable byteCount : natural := 0;
+  generateAndCheckSdo : process (sigSclk, sigSs, sigValid) is
+    variable index : integer range 0 to testCase'length-1 := 0;
   begin
+    if index = 0 then sigSdoReg <= testCase(0 to dataLength'high-1); end if;
+    if (index mod 8) = 0 then
+      sigSdoReg <= testCase(index to index+dataLength'high-1);
+    end if;
+    if sigSclk = '1' and sigSclk'event then
+        if sigSdo = sigSdoReg(index mod 8) then
+            report "SDO Signal match!" severity note;
+        else
+            report "SDO Signal missmatch!" severity failure;
+        end if;
+        index := index+1;
+    end if;
+  end process generateAndCheckSdo;
+
+  checkValid : process (sigValid) is
+    variable byteCount : natural range 0 to 2*dataLength'high := 0;
+    variable temp : std_logic_vector(dataLength'high-1 downto 0);
+  begin
+    temp := sigSdiReg;
     if sigValid = '1' and sigValid'event then
-      assert testVector(byteCount*8+7 downto byteCount) = sigSdoReg(7 downto 0) report "F00B4R" severity failure;
+        -- little endianess zu big endianess Konvertierung
+        for index in 0 to temp'length/2-1 loop
+            temp(index) := sigSdiReg(dataLength'high-1-index);
+            temp(dataLength'high-1-index) := sigSdiReg(index);
+        end loop;
+        if testCase(byteCount*8 to byteCount*8+dataLength'high-1) = temp(dataLength'high-1 downto 0) then
+            report "Pattern #" & integer'image(byteCount+1) & " matched." severity note;
+        else
+            report "Pattern #" & integer'image(byteCount+1) & "missmatch!" severity failure;            
+        end if;
+        byteCount := byteCount + 1;
     end if;
   end process checkValid;  
 

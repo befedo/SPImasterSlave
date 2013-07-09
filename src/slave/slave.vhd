@@ -59,7 +59,7 @@ begin
       when init     => sdo <= sdoReg(index); intSdoReg <= sdoReg; 
       when read     => intSdiReg(index) <= sdi; index <= index+1;
       when write    => sdo <= intSdoReg(index);
-      when lastEdge => valid <= '1'; index <= 0; sdo <= sdoReg(0); sdiReg <= intSdiReg;
+      when lastEdge => valid <= '1'; index <= 0; sdo <= sdoReg(0); sdiReg <= intSdiReg; intSdoReg <= sdoReg;
       when idle     => index <= 0; sdo <= 'Z'; valid <= '0';                                    
     end case;
   end process output;

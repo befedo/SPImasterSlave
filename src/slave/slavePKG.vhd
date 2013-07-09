@@ -53,6 +53,7 @@ package testbenchPackage is
     constant usecase14 : patternVector := "00000010";
     constant usecase15 : patternVector := "00000001";
     constant usecase16 : patternVector := "00000000";
-    constant testCase  : testVector    := usecase1 & usecase2  & usecase3  & usecase4  & usecase5  & usecase6  & usecase7  & usecase8 &
-                                          usecase9 & usecase10 & usecase11 & usecase12 & usecase13 & usecase14 & usecase15 & usecase16;
+    constant usecase17 : patternVector := "11111111";
+    constant testCase  : testVector    := usecase1 & usecase2  & usecase3  & usecase4  & usecase5  & usecase6  & usecase7  & usecase8  &
+                                          usecase9 & usecase10 & usecase11 & usecase12 & usecase13 & usecase14 & usecase15 & usecase16 & usecase17;
 end package testbenchPackage;
