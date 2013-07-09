@@ -5,8 +5,10 @@ BuildPath.txt
 transcript
 [BP External Sources]
 work/
+*.bak
 *.cf
 *.o
 *.mti
 *.mpf
 *.wlf
+*.tar.gz
