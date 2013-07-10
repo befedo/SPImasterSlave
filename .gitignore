@@ -12,3 +12,5 @@ work/
 *.mpf
 *.wlf
 *.tar.gz
+*.vcd
+*.vcdgz
