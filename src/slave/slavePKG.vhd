@@ -32,28 +32,32 @@ use IEEE.std_logic_1164.all;
 use WORK.slavePackage.all;
 
 
-package testbenchPackage is
-    subtype patternVector is std_logic_vector(dataLength'high-1 downto 0);
-    subtype testVector    is std_logic_vector;
-    constant response  : std_logic     := '1';
-    constant useCount  : positive      := 16;
-    constant usecase1  : patternVector := "00000001";
-    constant usecase2  : patternVector := "00000010";
-    constant usecase3  : patternVector := "00000100";
-    constant usecase4  : patternVector := "00001000";
-    constant usecase5  : patternVector := "00010000";
-    constant usecase6  : patternVector := "00100000";
-    constant usecase7  : patternVector := "01000000";
-    constant usecase8  : patternVector := "10000000";
-    constant usecase9  : patternVector := "01000000";
-    constant usecase10 : patternVector := "00100000";
-    constant usecase11 : patternVector := "00010000";
-    constant usecase12 : patternVector := "00001000";
-    constant usecase13 : patternVector := "00000100";
-    constant usecase14 : patternVector := "00000010";
-    constant usecase15 : patternVector := "00000001";
-    constant usecase16 : patternVector := "00000000";
-    constant usecase17 : patternVector := "11111111";
-    constant testCase  : testVector    := usecase1 & usecase2  & usecase3  & usecase4  & usecase5  & usecase6  & usecase7  & usecase8  &
-                                          usecase9 & usecase10 & usecase11 & usecase12 & usecase13 & usecase14 & usecase15 & usecase16 & usecase17;
+package testbenchPackage is    
+    subtype patternVector is std_logic_vector(dataLength'high-1 downto 0);    
+    subtype testVector    is std_logic_vector(17*dataLength'high-1 downto 0);
+    subtype usecaseSize   is positive range 1 to 17*patternVector'length;      
+    type    usecase       is (oneByte, eightBytes, faultByte);
+    type    usecaseArray  is array (oneByte to faultByte) of testVector;
+    type    sizeArray     is array (oneByte to faultByte) of usecaseSize;
+    constant pattern1  : patternVector := X"e3";    -- http://www.random.org/bytes/
+    constant pattern2  : patternVector := X"f3";
+    constant pattern3  : patternVector := X"08";
+    constant pattern4  : patternVector := X"84";
+    constant pattern5  : patternVector := X"4e";
+    constant pattern6  : patternVector := X"03";
+    constant pattern7  : patternVector := X"e4";
+    constant pattern8  : patternVector := X"07";
+    constant pattern9  : patternVector := X"24";
+    constant pattern10 : patternVector := X"16";
+    constant pattern11 : patternVector := X"aa";
+    constant pattern12 : patternVector := X"f2";
+    constant pattern13 : patternVector := X"2b";
+    constant pattern14 : patternVector := X"e2";
+    constant pattern15 : patternVector := X"ff";
+    constant pattern16 : patternVector := X"92";
+    constant pattern17 : patternVector := X"2d";
+    constant ucSize    : sizeArray     := ( patternVector'length, 17*patternVector'length, patternVector'length/2 );
+    constant ucVector  : usecaseArray  := ( (7 downto 0 => '1', others=>'0'),
+                                            (pattern1 & pattern2  & pattern3  & pattern4  & pattern5  & pattern6  & pattern7  & pattern8  & pattern9 & pattern10 & pattern11 & pattern12 & pattern13 & pattern14 & pattern15 & pattern16 & pattern17),
+                                            (3 downto 0 => '1', others=>'0') );
 end package testbenchPackage;

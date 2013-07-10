@@ -7,7 +7,10 @@ use WORK.testbenchPackage.all;
 
 
 entity slave_tb is
-  generic(periodeHalbe : time := 500 ns; bitsTransfered : positive := 128);
+  generic(periodeHalbe   : time     := 500 ns; 
+          used           : usecase  := eightBytes; 
+          bitsTransfered : positive := ucSize(eightBytes)
+          );
 end entity slave_tb;
 
 
@@ -41,14 +44,14 @@ begin
   generateSlaveSelect : process is
   begin
     sigSs <= '1'; wait for periodeHalbe/2;
-    sigSs <= '0'; wait for 2*bitsTransfered*periodeHalbe + periodeHalbe/2;        	
+    sigSs <= '0'; wait for 2*bitsTransfered*periodeHalbe;
   	sigSS <= '1'; wait;
   end process generateSlaveSelect;
 
   generateSdi : process is
   begin 
-    for index in 0 to bitsTransfered-1 loop 
-        sigSdi <= testCase(index); wait for 2*periodeHalbe;
+    for index in 0 to ucSize(used)-1 loop
+        sigSdi <= ucVector(used)(index); wait for 2*periodeHalbe;
     end loop;
     wait for 2*periodeHalbe;    
   	report "Simulation beendet!" severity failure;
@@ -56,34 +59,34 @@ begin
   end process generateSdi;
 
   generateAndCheckSdo : process (sigSclk, sigSs, sigValid) is
-    variable index : integer range 0 to testCase'length-1 := 0;
+    variable index : integer range 0 to ucSize(used)-1 := 0;
   begin
-    if index = 0 then sigSdoReg <= testCase(0 to dataLength'high-1); end if;
+    if index = 0 then sigSdoReg <= ucVector(used)(dataLength'high-1 downto 0); end if;
     if (index mod 8) = 0 then
-      sigSdoReg <= testCase(index to index+dataLength'high-1);
+      sigSdoReg <= ucVector(used)(index+dataLength'high-1 downto index);
     end if;
-    if sigSclk = '1' and sigSclk'event then
+    if sigSclk = '1' and sigSclk'event and sigSs = '0' then
         if sigSdo = sigSdoReg(index mod 8) then
             report "SDO Signal match!" severity note;
         else
             report "SDO Signal missmatch!" severity failure;
         end if;
-        index := index+1;
+        if index < ucSize(used)-1 then index := index+1; else index := 0; end if;
     end if;
   end process generateAndCheckSdo;
 
   checkValid : process (sigValid) is
-    variable byteCount : natural range 0 to 2*dataLength'high := 0;
+    variable byteCount : natural range 0 to 2*dataLength'high+1 := 0;
     variable temp : std_logic_vector(dataLength'high-1 downto 0);
   begin
     temp := sigSdiReg;
     if sigValid = '1' and sigValid'event then
         -- little endianess zu big endianess Konvertierung
-        for index in 0 to temp'length/2-1 loop
-            temp(index) := sigSdiReg(dataLength'high-1-index);
-            temp(dataLength'high-1-index) := sigSdiReg(index);
-        end loop;
-        if testCase(byteCount*8 to byteCount*8+dataLength'high-1) = temp(dataLength'high-1 downto 0) then
+--        for index in 0 to temp'length/2-1 loop
+--            temp(index) := sigSdiReg(dataLength'high-1-index);
+--            temp(dataLength'high-1-index) := sigSdiReg(index);
+--        end loop;
+        if ucVector(used)(byteCount*8+dataLength'high-1 downto byteCount*8) = temp(dataLength'high-1 downto 0) then
             report "Pattern #" & integer'image(byteCount+1) & " matched." severity note;
         else
             report "Pattern #" & integer'image(byteCount+1) & "missmatch!" severity failure;            
