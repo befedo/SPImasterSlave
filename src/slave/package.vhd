@@ -32,8 +32,8 @@ package slavePackage is
 	-- Allgemeine Verzögerungszeit
 	constant delay : time := 20 ns;
 	-- Zustandcodierung	
-    --type states is (idle, init, read, write, lastEdge);
-    type states is (idle, init, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifthteen, sixteen);
+    type states is (idle, init, read, write, lastEdge);
+    --type states is (idle, init, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifthteen, sixteen);
 end package slavePackage;
 --------------------------------------------------------------------------------
 -- Package Deklarationen zur Testbench
